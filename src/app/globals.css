@@ -1,26 +1,52 @@
 @import "tailwindcss";
 
+@theme {
+  --shadow-inset: inset 3px 5px 10px 0 rgba(0, 0, 0, 0.25);
+  --shadow-outset: 3px 5px 10px 0 rgba(0, 0, 0, 0.25);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #bfc0d1;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  font-family: var(--font-inter);
+  width: 100vw;
+  height: 100vh;
+  box-shadow: var(--shadow-inset);
+  line-height: 1.15;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-onest);
+}
+
+/* Кастомный скроллбар */
+.custom-scrollbar {
+  scrollbar-width: 10px;
+  position: relative;
+  margin-right: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #bfc0d1;
+  border-radius: 100px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #31323e;
+  border-radius: 100px;
+  border: 3px solid #bfc0d1;
 }
