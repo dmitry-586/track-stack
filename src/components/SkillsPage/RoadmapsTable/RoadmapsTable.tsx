@@ -1,23 +1,28 @@
 "use client";
 
-import { useRoadmapsStore } from "@/store/roadmapsStore";
 import Image from "next/image";
 import { RoadmapsSkeleton } from "../Skeletons/RoadmapsSkeleton";
 import { useQuery } from "@tanstack/react-query";
-import { API_URL } from "@/constants/api";
-import axios from "axios";
 import { DEFAULT_OPTION } from "@/constants/skillsPage";
 import { getQueryKey } from "@/constants/queryKeys";
+import { useRoadmapsStore } from "@/store/roadmapsStore";
+import { useUserStore } from "@/store/userStore";
 
-const RoadmapRow = ({ name, progress }: { name: string; progress: number }) => (
+const RoadmapRow = ({
+  title,
+  progress,
+}: {
+  title: string;
+  progress: string;
+}) => (
   <div className="flex items-center justify-between text-[18px] text-white pl-10 pr-[40px] h-[40px]">
     <div className="flex items-center gap-[10px]">
       <Image src="/HomePage/ponchik.svg" alt="" width={14} height={14} />
-      {name}
+      {title}
     </div>
     <div
       className={`w-[100px] text-right ${
-        progress === 100 ? "text-[#9884E6]" : ""
+        +progress === 100 ? "text-[#9884E6]" : ""
       }`}
     >
       {progress}%
@@ -26,20 +31,16 @@ const RoadmapRow = ({ name, progress }: { name: string; progress: number }) => (
 );
 
 function RoadmapsContent() {
-  const { setRoadmaps } = useRoadmapsStore();
+  const { getUserRoadmaps } = useRoadmapsStore();
+  const { id: userId } = useUserStore();
 
   const {
     data: roadmaps,
-    isLoading,
     error,
+    isLoading,
   } = useQuery({
     queryKey: getQueryKey.roadmaps(),
-    queryFn: async () => {
-      const response = await axios.get(`${API_URL}/api/roadmaps`);
-      const data = [DEFAULT_OPTION, ...response.data];
-      setRoadmaps(data);
-      return data;
-    },
+    queryFn: () => getUserRoadmaps(userId),
   });
 
   if (isLoading) {
@@ -55,7 +56,7 @@ function RoadmapsContent() {
     );
   }
 
-  if (!roadmaps || roadmaps.length <= 1) {
+  if (!roadmaps) {
     return (
       <div className="flex flex-col items-center justify-center h-[120px] text-white">
         <p className="text-xl mb-2">Нет активных roadmap</p>
@@ -71,9 +72,12 @@ function RoadmapsContent() {
   return (
     <div className="h-[120px] overflow-y-auto snap-y snap-mandatory custom-scrollbar">
       <div className="h-full flex flex-col">
-        {filteredRoadmaps.map((roadmap) => (
-          <div key={roadmap.roadmapId} className="snap-start h-[40px]">
-            <RoadmapRow name={roadmap.name} progress={roadmap.progress} />
+        {filteredRoadmaps.map((roadmap, index) => (
+          <div key={index} className="snap-start h-[40px]">
+            <RoadmapRow
+              title={roadmap.roadmap.title}
+              progress={roadmap.progress}
+            />
           </div>
         ))}
       </div>

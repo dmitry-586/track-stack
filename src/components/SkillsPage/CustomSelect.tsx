@@ -6,25 +6,35 @@ import { m, AnimatePresence } from "framer-motion";
 import { DEFAULT_OPTION, FOCUS_OPTION } from "@/constants/skillsPage";
 import { useRoadmapsStore } from "@/store/roadmapsStore";
 import { useSkillsStore } from "@/store/skillsStore";
+import { RoadmapOption } from "@/interfaces/interfaces";
 
 export function CustomSelect() {
-  const { roadmaps, selectedRoadmap, setSelectedRoadmap } = useRoadmapsStore();
-  const { focusSkills } = useSkillsStore();
+  const { userRoadmaps } = useRoadmapsStore();
+  const { focusSkills, selectedRoadmap, setSelectedRoadmap } = useSkillsStore();
   const [isOpen, setIsOpen] = useState(false);
 
-  const allOptions = useMemo(() => {
-    const cleanRoadmaps = roadmaps.filter(
-      (r) => r.roadmapId !== DEFAULT_OPTION.roadmapId
-    );
+  const transformedRoadmaps = useMemo(() => {
+    return userRoadmaps.map((roadmap) => ({
+      roadmapId: roadmap.roadmapId,
+      title: roadmap.roadmap.title,
+      complexity: roadmap.roadmap.complexity,
+      color: roadmap.roadmap.color,
+      stages: roadmap.roadmap.stages,
+      technologies: roadmap.roadmap.technologies,
+      progress: roadmap.progress,
+    }));
+  }, [userRoadmaps]);
 
-    return [
-      DEFAULT_OPTION,
-      ...(focusSkills.length > 0 ? [FOCUS_OPTION] : []),
-      ...cleanRoadmaps,
-    ];
-  }, [roadmaps, focusSkills]);
+  const allOptions = useMemo(() => {
+    return [DEFAULT_OPTION, FOCUS_OPTION, ...transformedRoadmaps];
+  }, [transformedRoadmaps]);
 
   const displayValue = selectedRoadmap || DEFAULT_OPTION;
+
+  const handleSelect = async (option: RoadmapOption) => {
+    setSelectedRoadmap(option);
+    setIsOpen(false);
+  };
 
   return (
     <div className="relative">
@@ -33,14 +43,14 @@ export function CustomSelect() {
         onClick={() => setIsOpen(!isOpen)}
         whileTap={{ scale: 0.98 }}
       >
-        <span>{displayValue.name}</span>
+        <span>{displayValue.title}</span>
         <m.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.25 }}
         >
           <Image
             src="/SkillsPage/select-arrow.svg"
-            alt=""
+            alt="Dropdown arrow"
             width={36}
             height={18}
           />
@@ -58,7 +68,7 @@ export function CustomSelect() {
           >
             {allOptions.map((option, index) => (
               <m.div
-                key={option.roadmapId}
+                key={`${option.roadmapId}-${index}`}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
@@ -72,13 +82,10 @@ export function CustomSelect() {
                     ? "bg-[#60519B]"
                     : "hover:bg-[#4A4B5A]"
                 }`}
-                onClick={() => {
-                  setSelectedRoadmap(option);
-                  setIsOpen(false);
-                }}
+                onClick={() => handleSelect(option)}
               >
                 <m.p whileHover={{ x: 5 }} whileTap={{ scale: 0.98 }}>
-                  {option.name}
+                  {option.title}
                   {option.roadmapId === FOCUS_OPTION.roadmapId && (
                     <span className="ml-2 text-sm text-purple-300">
                       ({focusSkills.length})

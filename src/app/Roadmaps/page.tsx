@@ -1,38 +1,34 @@
-import RoadmapCard from "@/components/RoadmapsPage/RoadmapCard";
+"use client";
 
-export default function page() {
+import { useRoadmapsStore } from "@/store/roadmapsStore";
+import InProgress from "@/components/RoadmapsPage/InProgress";
+
+export default function RoadmapsPage() {
+  const { isRoadmapVisible } =
+    useRoadmapsStore();
+
+
   return (
-    <section className="px-[60px] py-10">
-      <div className="grid grid-cols-2 gap-10">
-        <RoadmapCard
-          title="Frontend-разработчик"
-          complexity="подходит для новичков"
-          stages={10}
-          technologies="HTML - CSS - JS - REACT - TS - NEXT"
-          color="#45A54E"
-        />
-        <RoadmapCard
-          title="Backend-разработчик JS"
-          complexity="требует опыта"
-          stages={12}
-          technologies="JS - Node - Express - Nest - PostgreSQL"
-          color="#BE9244"
-        />
-        <RoadmapCard
-          title="Data Science"
-          complexity="для уверенных разработчиков"
-          stages={17}
-          technologies="Python - Pandas - Matplotlib - TensorFlow - SQL"
-          color="#B94A4A"
-        />
-        <RoadmapCard
-          title="RUST-разработчик"
-          complexity="экспертный уровень"
-          stages={11}
-          technologies="Rust - Ownership - WebAssembly - Blockchain"
-          color="#6A4CE0"
-        />
-      </div>
+    <section className="relative w-full h-full min-h-screen px-[60px] py-10 overflow-hidden">
+      {!isRoadmapVisible ? (
+        <div className="w-full h-full">
+          <div className="grid grid-cols-2 gap-10 w-full">
+            {/* {roadmaps?.map((card) => (
+              <div key={card.id}>
+                <RoadmapCard
+                  {...card}
+                  onClick={() => {
+                    selectRoadmap(card.id);
+                    toggleVisibility(true);
+                  }}
+                />
+              </div>
+            ))} */}
+          </div>
+        </div>
+      ) : (
+        <InProgress />
+      )}
     </section>
   );
 }

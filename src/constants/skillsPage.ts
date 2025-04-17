@@ -1,11 +1,9 @@
 export const DEFAULT_OPTION = {
-  name: "Все изученные навыки",
-  progress: 0,
+  title: "Все изученные навыки",
   roadmapId: "",
 };
 
 export const FOCUS_OPTION = {
-  name: "Фокус-навыки",
-  progress: 0,
+  title: "Фокус-навыки",
   roadmapId: "focus",
 };

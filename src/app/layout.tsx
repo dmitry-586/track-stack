@@ -5,6 +5,7 @@ import { NavMenu } from "@/components/NavMenu/NavMenu";
 import { domAnimation, LazyMotion } from "framer-motion";
 import { Providers } from "./providers";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { AppInitializer } from "@/components/AppInitializer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,6 +32,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${onest.variable} antialiased`}>
         <Providers>
           <LazyMotion features={domAnimation}>
+            <AppInitializer />
             <section className="flex h-full w-full">
               <NavMenu />
               {children}

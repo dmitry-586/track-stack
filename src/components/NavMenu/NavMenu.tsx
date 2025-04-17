@@ -14,7 +14,7 @@ export function NavMenu() {
   };
 
   return (
-    <nav className="min-w-[300px] h-full bg-[#31323E] py-10 px-5 pr-0 relative shadow-inset">
+    <nav className="min-w-[300px] h-full bg-[#31323E] py-10 px-5 pr-0 relative shadow-inset z-20">
       <Image src="/logo.svg" alt="logo" width={70} height={70} />
       <ul className="flex flex-col mt-10 gap-8 relative z-10">
         {MenuData.map((item) => (

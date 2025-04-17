@@ -1,9 +1,10 @@
 interface RoadmapCardProps {
   title: string;
-  complexity: string;
-  stages: number;
-  technologies: string;
-  color: string;
+  complexity?: string;
+  stages?: number;
+  technologies?: string;
+  color?: string;
+  onClick: () => void;
 }
 
 export default function RoadmapCard({
@@ -12,6 +13,7 @@ export default function RoadmapCard({
   stages,
   technologies,
   color,
+  onClick,
 }: RoadmapCardProps) {
   return (
     <div className="bg-[#31323E] rounded-[20px] pt-[25px] px-[30px] pb-[20px] flex flex-col gap-[20px] w-[490px] h-[310px] relative shadow-outset">
@@ -33,7 +35,10 @@ export default function RoadmapCard({
         <p>{technologies}</p>
       </div>
       <div className="flex justify-between mt-auto">
-        <button className="text-[#BFC0D1] text-[18px] cursor-pointer">
+        <button
+          onClick={onClick}
+          className="text-[#BFC0D1] text-[18px] cursor-pointer"
+        >
           Подробнее...
         </button>
         <button className="text-[#9884E6] text-[18px] cursor-pointer">

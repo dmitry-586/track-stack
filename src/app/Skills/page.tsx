@@ -3,7 +3,7 @@
 import { CustomSelect } from "../../components/SkillsPage/CustomSelect";
 import SkillsContent from "@/components/SkillsPage/SkillsTable/SkillsTable";
 import RoadmapsTable from "@/components/SkillsPage/RoadmapsTable/RoadmapsTable";
-import SkillsSearch from "@/components/SkillsPage/SearchSection/SkillsSearch";
+import FocusSkills from "@/components/SkillsPage/FocusSkillsSection/FocusSkills";
 import { LevelSection } from "@/components/SkillsPage/LevelSection/LevelSection";
 
 export default function SkillsPage() {
@@ -15,7 +15,7 @@ export default function SkillsPage() {
         <RoadmapsTable />
       </div>
       <div className="flex flex-1 flex-col gap-[30px] max-w-[470px]">
-        <SkillsSearch />
+        <FocusSkills />
         <LevelSection />
       </div>
     </section>
