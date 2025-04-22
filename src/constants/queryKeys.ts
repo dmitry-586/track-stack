@@ -4,7 +4,8 @@ export const QUERY_KEYS = {
   USER_SKILLS: "userSkills",
   ALL_SKILLS: "allSkills",
   FOCUS_SKILLS: "focusSkills",
-  ROADMAPS: "roadmaps",
+  USER_ROADMAPS: "userRoadmaps",
+  ALL_ROADMAPS: "allRoadmaps",
 } as const;
 
 export const getQueryKey = {
@@ -17,5 +18,6 @@ export const getQueryKey = {
   ],
   allSkills: () => [QUERY_KEYS.ALL_SKILLS],
   focusSkills: (userId: string) => [QUERY_KEYS.FOCUS_SKILLS, userId],
-  roadmaps: () => [QUERY_KEYS.ROADMAPS],
+  userRoadmaps: () => [QUERY_KEYS.USER_ROADMAPS],
+  allRoadmaps: () => [QUERY_KEYS.ALL_ROADMAPS],
 };

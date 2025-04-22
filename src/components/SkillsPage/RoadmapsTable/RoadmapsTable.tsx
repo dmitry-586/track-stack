@@ -39,7 +39,7 @@ function RoadmapsContent() {
     error,
     isLoading,
   } = useQuery({
-    queryKey: getQueryKey.roadmaps(),
+    queryKey: getQueryKey.userRoadmaps(),
     queryFn: () => getUserRoadmaps(userId),
   });
 
@@ -66,7 +66,7 @@ function RoadmapsContent() {
   }
 
   const filteredRoadmaps = roadmaps.filter(
-    (roadmap) => roadmap.roadmapId !== DEFAULT_OPTION.roadmapId
+    (roadmap) => roadmap.roadmapId !== DEFAULT_OPTION.roadmapId,
   );
 
   return (

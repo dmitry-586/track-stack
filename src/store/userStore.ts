@@ -7,11 +7,9 @@ interface UserStore {
   clearUserData: () => void;
 }
 
-export const useUserStore = create<UserStore>()(
-  (set) => ({
-    id: "cm9fxjkjn0000uaoc6sztcvv7",
-    email: "",
-    setUserData: (user) => set({ id: user.id, email: user.email }),
-    clearUserData: () => set({ id: "", email: "" }),
-  })
-);
+export const useUserStore = create<UserStore>()((set) => ({
+  id: "cm9rek4yl0001ijaso8tzd0to",
+  email: "",
+  setUserData: (user) => set({ id: user.id, email: user.email }),
+  clearUserData: () => set({ id: "", email: "" }),
+}));

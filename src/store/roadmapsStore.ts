@@ -7,11 +7,11 @@ interface RoadmapsStore {
   roadmaps: Roadmap[];
   userRoadmaps: userRoadmap[];
   selectedRoadmap: Roadmap | null;
+  setSelectedRoadmap: (roadmap: Roadmap | null) => void;
   isRoadmapVisible: boolean;
-  setRoadmaps: (roadmaps: Roadmap[]) => void;
-  selectRoadmap: (id: string) => void;
   toggleVisibility: (state?: boolean) => void;
   getUserRoadmaps: (userId: string | null) => Promise<userRoadmap[]>;
+  getAllRoadmaps: () => Promise<Roadmap[]>;
 }
 
 export const useRoadmapsStore = create<RoadmapsStore>((set) => ({
@@ -20,12 +20,7 @@ export const useRoadmapsStore = create<RoadmapsStore>((set) => ({
   selectedRoadmap: null,
   isRoadmapVisible: false,
 
-  setRoadmaps: (roadmaps) => set({ roadmaps }),
-
-  selectRoadmap: (id) =>
-    set((state) => ({
-      selectedRoadmap: state.roadmaps.find((r) => r.roadmapId === id) || null,
-    })),
+  setSelectedRoadmap: (roadmap) => set({ selectedRoadmap: roadmap }),
 
   toggleVisibility: (state) =>
     set((prev) => ({
@@ -40,6 +35,19 @@ export const useRoadmapsStore = create<RoadmapsStore>((set) => ({
       const userRoadmaps: userRoadmap[] = response.data;
       set({ userRoadmaps: userRoadmaps });
       return userRoadmaps;
+    } catch (error) {
+      console.error("Ошибка при загрузке:", error);
+      return [];
+    }
+  },
+
+  getAllRoadmaps: async (): Promise<Roadmap[]> => {
+    try {
+      const url = `${API_URL}/api/roadmaps`;
+      const response = await axios.get(url);
+      const roadmaps: Roadmap[] = response.data;
+      set({ roadmaps: roadmaps });
+      return roadmaps;
     } catch (error) {
       console.error("Ошибка при загрузке:", error);
       return [];

@@ -9,7 +9,11 @@ import { getQueryKey } from "@/constants/queryKeys";
 import { useMemo } from "react";
 import { FOCUS_OPTION } from "@/constants/skillsPage";
 
-export function SkillsList() {
+interface SkillsListProps {
+  sortDirection: "asc" | "desc";
+}
+
+export function SkillsList({ sortDirection }: SkillsListProps) {
   const { id: userId } = useUserStore();
   const { getUserSkills, selectedRoadmap, focusSkills, getFocusSkills } =
     useSkillsStore();
@@ -42,8 +46,19 @@ export function SkillsList() {
   });
 
   const displayedSkills = useMemo(() => {
-    return isFocusMode ? focusSkillsData || focusSkills : skills || [];
-  }, [isFocusMode, focusSkillsData, focusSkills, skills]);
+    const skillsToDisplay = isFocusMode
+      ? focusSkillsData || focusSkills
+      : skills || [];
+
+    return [...skillsToDisplay].sort((a, b) => {
+      const progressA = +a.progress;
+      const progressB = +b.progress;
+
+      return sortDirection === "asc"
+        ? progressA - progressB
+        : progressB - progressA;
+    });
+  }, [isFocusMode, focusSkillsData, focusSkills, skills, sortDirection]);
 
   const content = useMemo(() => {
     const loading = isFocusMode ? isFocusLoading : isLoading;
