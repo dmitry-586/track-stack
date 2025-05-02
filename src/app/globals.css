@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
 	--shadow-inset: inset 3px 5px 10px 0 rgba(0, 0, 0, 0.25);
@@ -75,7 +75,7 @@ input.custom-checkbox:checked {
 }
 
 input.custom-checkbox:checked::after {
-	content: '';
+	content: "";
 	position: absolute;
 	left: 50%;
 	top: 50%;

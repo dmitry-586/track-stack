@@ -1,43 +1,60 @@
 export interface Roadmap {
-  roadmapId: string;
-  title: string;
-  complexity?: string;
-  color?: string;
-  stages?: number;
-  technologies?: string;
+	roadmapId: string
+	title: string
+	complexity?: string
+	color?: string
+	stages?: number
+	technologies?: string
 }
 
-export interface userRoadmap {
-  userId: string;
-  roadmapId: string;
-  progress: string;
-  roadmap: Roadmap;
+export interface UserRoadmap {
+	userId: string
+	roadmapId: string
+	progress: string
+	roadmap: Roadmap
 }
 
 export interface Skill {
-  skillId: string;
-  name: string;
-  roadmapIds: string[];
+	skillId: string
+	name: string
+	roadmapIds: string[]
 }
 
-export interface userSkill {
-  userId: string;
-  skillId: string;
-  progress: string;
-  skill: Skill;
+export interface UserSkill {
+	userId: string
+	skillId: string
+	progress: number
+	skill: Skill
 }
 
 export interface SkillsButtonProps {
-  title: string;
-  onClick?: () => void;
+	title: string
+	onClick?: () => void
 }
 
 export interface User {
-  id: string;
-  email: string;
+	id: string
+	email: string
 }
 
 export interface RoadmapOption extends Roadmap {
-  progress?: number;
+	progress?: number
 }
 
+export interface Task {
+	taskId: string
+	title: string
+	skillId: string
+	skill: {
+		skillId: string
+		name: string
+		roadmapIds: string[]
+	}
+}
+
+export interface UserTask {
+	userId: string
+	taskId: string
+	completed: boolean
+	task: Task
+}

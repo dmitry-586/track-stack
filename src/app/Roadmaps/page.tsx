@@ -1,9 +1,9 @@
-'use client'
+"use client"
 
-import RoadmapCard from '@/components/RoadmapsPage/RoadmapCard'
-import { getQueryKey } from '@/constants/queryKeys'
-import { useRoadmapsStore } from '@/store/roadmapsStore'
-import { useQuery } from '@tanstack/react-query'
+import RoadmapCard from "@/components/RoadmapsPage/RoadmapCard"
+import { getQueryKey } from "@/constants/queryKeys"
+import { useRoadmapsStore } from "@/store/roadmapsStore"
+import { useQuery } from "@tanstack/react-query"
 
 export default function RoadmapsPage() {
 	const { getAllRoadmaps } = useRoadmapsStore()
@@ -16,9 +16,9 @@ export default function RoadmapsPage() {
 	})
 
 	return (
-		<section className='relative w-full h-full min-h-screen px-[60px] py-10 overflow-hidden'>
-			<div className='w-full h-full flex justify-center items-center'>
-				<div className='grid grid-cols-2 gap-10 w-fit'>
+		<section className="relative w-full h-full min-h-screen px-[60px] py-10 overflow-hidden">
+			<div className="w-full h-full flex justify-center items-center">
+				<div className="grid grid-cols-2 gap-10 w-fit">
 					{allRoadmaps?.map(card => (
 						<div key={card.roadmapId}>
 							<RoadmapCard {...card} />
