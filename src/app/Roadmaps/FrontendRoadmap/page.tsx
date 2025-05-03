@@ -37,16 +37,17 @@ export default function FrontendRoadmapPage() {
 		if (!userStore.id) return
 
 		try {
-			// Оптимистичное обновление
 			await taskStore.updateUserTaskStatus(taskId, userStore.id, !currentStatus)
 
-			// Инвалидация кэша
+			// Инвалидация всех связанных запросов
 			await Promise.all([
 				queryClient.invalidateQueries({
 					queryKey: getQueryKey.userSkills(userStore.id),
+					exact: false, // Инвалидируем все варианты запросов навыков пользователя
 				}),
 				queryClient.invalidateQueries({
 					queryKey: getQueryKey.focusSkills(userStore.id),
+					exact: false,
 				}),
 			])
 		} catch (error) {

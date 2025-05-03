@@ -1,4 +1,3 @@
-// store/tasksStore.ts
 import { API_URL } from "@/constants/api"
 import { Task, UserTask } from "@/interfaces/interfaces"
 import axios from "axios"
@@ -49,7 +48,6 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 		try {
 			const { allTasks, userTasks } = get()
 
-			// Оптимистичное обновление
 			const newUserTasks = userTasks.some(ut => ut.taskId === taskId)
 				? userTasks.map(ut =>
 						ut.taskId === taskId ? { ...ut, completed } : ut
@@ -70,7 +68,6 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 				completed,
 			})
 		} catch (error) {
-			// Откат изменений
 			const { userTasks } = get()
 			set({
 				userTasks: userTasks.map(ut =>
