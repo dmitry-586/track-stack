@@ -27,12 +27,6 @@ export default function FrontendRoadmapPage() {
 		queryFn: () => taskStore.getAllTasks(),
 	})
 
-	const { data: userTasks } = useQuery({
-		queryKey: ["userTasks", userStore.id],
-		queryFn: () => taskStore.getUserTasks(userStore.id!),
-		enabled: !!userStore.id,
-	})
-
 	const handleToggleCheck = async (taskId: string, currentStatus: boolean) => {
 		if (!userStore.id) return
 
@@ -43,10 +37,18 @@ export default function FrontendRoadmapPage() {
 			await Promise.all([
 				queryClient.invalidateQueries({
 					queryKey: getQueryKey.userSkills(userStore.id),
-					exact: false, // Инвалидируем все варианты запросов навыков пользователя
+					exact: false,
 				}),
 				queryClient.invalidateQueries({
 					queryKey: getQueryKey.focusSkills(userStore.id),
+					exact: false,
+				}),
+				queryClient.invalidateQueries({
+					queryKey: getQueryKey.userRoadmaps(),
+					exact: false,
+				}),
+				queryClient.invalidateQueries({
+					queryKey: ["userTasks", userStore.id],
 					exact: false,
 				}),
 			])
@@ -128,7 +130,7 @@ export default function FrontendRoadmapPage() {
 							<div className="bg-[#31323E] rounded-[20px] h-[250px] w-[280px] shadow-outset p-5">
 								<h3 className="text-[24px] font-medium mb-4">{block.title}</h3>
 								<ul className="space-y-3">
-									{block.items.map((item, itemIndex) => (
+									{block.items.map((item) => (
 										<li
 											key={item.taskId}
 											className="flex items-center gap-2 text-[18px]"
@@ -196,7 +198,7 @@ export default function FrontendRoadmapPage() {
 										{block.title}
 									</h3>
 									<ul className="space-y-3">
-										{block.items.map((item, itemIndex) => (
+										{block.items.map((item) => (
 											<li
 												key={item.taskId}
 												className="flex items-center gap-2 text-[18px]"

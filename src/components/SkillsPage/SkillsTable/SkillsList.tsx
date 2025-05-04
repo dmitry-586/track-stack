@@ -28,11 +28,12 @@ export function SkillsList({ sortDirection }: SkillsListProps) {
 		queryFn: async () => {
 			if (!userId) return []
 			const result = await getUserSkills(userId, selectedRoadmap?.roadmapId)
-			// Явное обновление хранилища после запроса
 			useSkillsStore.setState({ userSkills: result })
 			return result
 		},
 		enabled: !!userId && !isFocusMode,
+		staleTime: 0,
+		refetchOnWindowFocus: true,
 	})
 
 	const {
@@ -44,11 +45,12 @@ export function SkillsList({ sortDirection }: SkillsListProps) {
 		queryFn: async () => {
 			if (!userId) return []
 			const result = await getFocusSkills(userId)
-			// Явное обновление хранилища после запроса
 			useSkillsStore.setState({ focusSkills: result })
 			return result
 		},
 		enabled: !!userId && isFocusMode,
+		staleTime: 0,
+		refetchOnWindowFocus: true,
 	})
 
 	const displayedSkills = useMemo(() => {

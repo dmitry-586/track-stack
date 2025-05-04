@@ -1,11 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Image from "next/image";
 import FocusContent from "./FocusContent";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function FocusSkills() {
   const [searchTerm, setSearchTerm] = useState("");
+  const queryClient = useQueryClient();
+
+  const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    // Инвалидируем кэш при поиске для обновления данных
+    queryClient.invalidateQueries({ queryKey: ["focusData"] });
+  }, [queryClient]);
 
   return (
     <section className="flex flex-col gap-[25px]">
@@ -13,7 +21,7 @@ export default function FocusSkills() {
         <input
           type="text"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleSearch}
           className="w-full p-[25px] rounded-[20px] bg-[#31323E] text-[20px] text-white placeholder-[#BFC0D1] outline-none h-[70px] shadow-outset pr-[70px]"
           placeholder="Поиск навыков..."
         />

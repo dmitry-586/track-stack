@@ -162,7 +162,7 @@ export const useSkillsStore = create<SkillsStore>()(
 
 			removeFocusSkill: async (skillId: string, userId: string) => {
 				try {
-					const { focusSkills, userSkills } = get()
+					const { focusSkills } = get()
 					const skillToRemove = focusSkills.find(s => s.skillId === skillId)
 
 					if (!skillToRemove) {

@@ -41,6 +41,8 @@ function RoadmapsContent() {
   } = useQuery({
     queryKey: getQueryKey.userRoadmaps(),
     queryFn: () => getUserRoadmaps(userId),
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 
   if (isLoading) {

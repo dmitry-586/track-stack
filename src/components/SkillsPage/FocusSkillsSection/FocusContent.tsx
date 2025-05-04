@@ -37,18 +37,11 @@ export default function FocusContent({ searchTerm }: Props) {
           getUserSkills(userId),
         ]);
 
-        await Promise.all([
-          queryClient.invalidateQueries({
-            queryKey: getQueryKey.focusSkills(userId),
-          }),
-          queryClient.invalidateQueries({
-            queryKey: getQueryKey.userSkills(userId),
-          }),
-        ]);
-
         return { queryFocusSkills, skills };
       },
       enabled: !!userId,
+      staleTime: 0,
+      refetchOnWindowFocus: true,
     });
 
   const filteredSkills = skills.filter(
@@ -78,9 +71,20 @@ export default function FocusContent({ searchTerm }: Props) {
           { position: "top-center", icon: action === "remove" ? "🗑️" : "🎯" }
         );
 
-        await queryClient.invalidateQueries({
-          queryKey: ["focusData"],
-        });
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: ["focusData"],
+          }),
+          queryClient.invalidateQueries({
+            queryKey: getQueryKey.focusSkills(userId),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: getQueryKey.userSkills(userId),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: getQueryKey.userRoadmaps(),
+          }),
+        ]);
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Неизвестная ошибка";
