@@ -1,11 +1,14 @@
 "use client"
 
 import { getQueryKey } from "@/constants/queryKeys"
+import { useRoadmapsStore } from "@/store/roadmapsStore"
 import { useTaskStore } from "@/store/tasksStore"
 import { useUserStore } from "@/store/userStore"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { useMemo } from "react"
+import toast from "react-hot-toast"
 
 const SKILL_ORDER = [
 	"HTML",
@@ -20,6 +23,8 @@ export default function FrontendRoadmapPage() {
 	const queryClient = useQueryClient()
 	const taskStore = useTaskStore()
 	const userStore = useUserStore()
+	const roadmapsStore = useRoadmapsStore()
+	const router = useRouter()
 
 	// Загрузка данных
 	const { data: allTasks } = useQuery({
@@ -27,9 +32,51 @@ export default function FrontendRoadmapPage() {
 		queryFn: () => taskStore.getAllTasks(),
 	})
 
-	const handleToggleCheck = async (taskId: string, currentStatus: boolean) => {
+	const { data: userTasks } = useQuery({
+		queryKey: ["userTasks", userStore.id],
+		queryFn: () => taskStore.getUserTasks(userStore.id),
+		enabled: !!userStore.id,
+	})
+
+	const { data: userRoadmaps } = useQuery({
+		queryKey: getQueryKey.userRoadmaps(),
+		queryFn: () => roadmapsStore.getUserRoadmaps(userStore.id),
+		enabled: !!userStore.id,
+	})
+
+	const isRoadmapActive = useMemo(() => {
+		return (
+			userRoadmaps?.some(roadmap => roadmap.roadmapId === "frontend") ?? false
+		)
+	}, [userRoadmaps])
+
+	const handleAddRoadmap = async () => {
 		if (!userStore.id) return
 
+		const toastId = toast.loading("Активация роадмепа...")
+		try {
+			const success = await roadmapsStore.addRoadmapToUser(
+				"frontend",
+				userStore.id
+			)
+			if (success) {
+				await queryClient.invalidateQueries({
+					queryKey: getQueryKey.userRoadmaps(),
+				})
+				toast.success("Роадмеп успешно активирован!", { id: toastId })
+			} else {
+				toast.error("Не удалось активировать роадмеп", { id: toastId })
+			}
+		} catch (error) {
+			console.log(error)
+			toast.error("Произошла ошибка при активации роадмепа", { id: toastId })
+		}
+	}
+
+	const handleToggleCheck = async (taskId: string, currentStatus: boolean) => {
+		if (!userStore.id || !isRoadmapActive) return
+
+		const toastId = toast.loading("Обновление статуса задачи...")
 		try {
 			await taskStore.updateUserTaskStatus(taskId, userStore.id, !currentStatus)
 
@@ -52,8 +99,10 @@ export default function FrontendRoadmapPage() {
 					exact: false,
 				}),
 			])
+			toast.success("Статус задачи обновлен!", { id: toastId })
 		} catch (error) {
 			console.error("Ошибка при обновлении задачи:", error)
+			toast.error("Не удалось обновить статус задачи", { id: toastId })
 		}
 	}
 
@@ -63,12 +112,12 @@ export default function FrontendRoadmapPage() {
 			allTasks?.map(task => ({
 				...task,
 				completed:
-					taskStore.userTasks.find(
+					userTasks?.find(
 						ut => ut.taskId === task.taskId && ut.userId === userStore.id
 					)?.completed ?? false,
 			})) || []
 		)
-	}, [allTasks, taskStore.userTasks, userStore.id])
+	}, [allTasks, userTasks, userStore.id])
 
 	// Группировка задач
 	const groupedTasks = useMemo(() => {
@@ -105,8 +154,8 @@ export default function FrontendRoadmapPage() {
 				</div>
 				<div className="flex gap-5 items-center">
 					<button
-						onClick={() => console.log("Назад")}
-						className="size-[50px] bg-[#60519B] rounded-full flex justify-center items-center cursor-pointer shadow-outset"
+						onClick={() => router.back()}
+						className="size-[50px] bg-[#60519B] rounded-full flex justify-center items-center cursor-pointer shadow-outset transition-all duration-300 hover:scale-[1.05]"
 					>
 						<Image
 							src="/NavMenu/roadmaps.svg"
@@ -115,10 +164,21 @@ export default function FrontendRoadmapPage() {
 							height={25}
 						/>
 					</button>
-					<div className="bg-[#31323E] rounded-[20px] shadow-outset flex justify-center items-center gap-2 h-[70px] w-[250px]">
-						<h2 className="text-[20px] font-medium">Уровень: </h2>
-						<h2 className="text-[24px] font-medium text-[#9884E6]">trainee</h2>
-					</div>
+					{!isRoadmapActive ? (
+						<button
+							onClick={handleAddRoadmap}
+							className="bg-[#60519B] rounded-[20px] shadow-outset flex justify-center items-center h-[70px] w-[250px] cursor-pointer hover:bg-[#4a3d7a] transition-colors duration-300"
+						>
+							<h2 className="text-[24px] font-medium">Активировать</h2>
+						</button>
+					) : (
+						<div className="bg-[#31323E] rounded-[20px] shadow-outset flex justify-center items-center gap-2 h-[70px] w-[250px]">
+							<h2 className="text-[20px] font-medium">Уровень: </h2>
+							<h2 className="text-[24px] font-medium text-[#9884E6]">
+								trainee
+							</h2>
+						</div>
+					)}
 				</div>
 			</header>
 
@@ -130,7 +190,7 @@ export default function FrontendRoadmapPage() {
 							<div className="bg-[#31323E] rounded-[20px] h-[250px] w-[280px] shadow-outset p-5">
 								<h3 className="text-[24px] font-medium mb-4">{block.title}</h3>
 								<ul className="space-y-3">
-									{block.items.map((item) => (
+									{block.items.map(item => (
 										<li
 											key={item.taskId}
 											className="flex items-center gap-2 text-[18px]"
@@ -142,6 +202,7 @@ export default function FrontendRoadmapPage() {
 													handleToggleCheck(item.taskId, item.checked)
 												}
 												className="custom-checkbox"
+												disabled={!isRoadmapActive}
 											/>
 											<span
 												className={
@@ -198,7 +259,7 @@ export default function FrontendRoadmapPage() {
 										{block.title}
 									</h3>
 									<ul className="space-y-3">
-										{block.items.map((item) => (
+										{block.items.map(item => (
 											<li
 												key={item.taskId}
 												className="flex items-center gap-2 text-[18px]"
@@ -210,6 +271,7 @@ export default function FrontendRoadmapPage() {
 														handleToggleCheck(item.taskId, item.checked)
 													}
 													className="custom-checkbox"
+													disabled={!isRoadmapActive}
 												/>
 												<span
 													className={

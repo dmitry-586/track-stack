@@ -12,6 +12,8 @@ interface RoadmapsStore {
 	toggleVisibility: (state?: boolean) => void
 	getUserRoadmaps: (userId: string | null) => Promise<UserRoadmap[]>
 	getAllRoadmaps: () => Promise<Roadmap[]>
+	addRoadmapToUser: (roadmapId: string, userId: string) => Promise<boolean>
+	optimisticallyAddRoadmap: (roadmapId: string, userId: string) => void
 }
 
 export const useRoadmapsStore = create<RoadmapsStore>(set => ({
@@ -51,6 +53,41 @@ export const useRoadmapsStore = create<RoadmapsStore>(set => ({
 		} catch (error) {
 			console.error("Ошибка при загрузке:", error)
 			return []
+		}
+	},
+
+	optimisticallyAddRoadmap: (roadmapId: string, userId: string) => {
+		set(state => {
+			const roadmap = state.roadmaps.find(r => r.roadmapId === roadmapId)
+			if (!roadmap) return state
+
+			return {
+				...state,
+				userRoadmaps: [
+					...state.userRoadmaps,
+					{ roadmapId, userId, progress: "0", roadmap }
+				]
+			}
+		})
+	},
+
+	addRoadmapToUser: async (roadmapId: string, userId: string): Promise<boolean> => {
+		try {
+			// Оптимистичное обновление
+			useRoadmapsStore.getState().optimisticallyAddRoadmap(roadmapId, userId)
+			
+			const url = `${API_URL}/api/roadmaps/${roadmapId}/user/${userId}`
+			await axios.post(url)
+			await useRoadmapsStore.getState().getUserRoadmaps(userId)
+			return true
+		} catch (error) {
+			// В случае ошибки откатываем оптимистичное обновление
+			await useRoadmapsStore.getState().getUserRoadmaps(userId)
+			if (axios.isAxiosError(error) && error.response?.status === 409) {
+				return true
+			}
+			console.error("Ошибка при добавлении роадмепа:", error)
+			return false
 		}
 	},
 }))

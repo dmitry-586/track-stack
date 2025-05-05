@@ -6,6 +6,7 @@ import { domAnimation, LazyMotion } from "framer-motion";
 import { Providers } from "./providers";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AppInitializer } from "@/components/AppInitializer";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -39,6 +40,17 @@ export default function RootLayout({
             </section>
           </LazyMotion>
           <ReactQueryDevtools initialIsOpen={false} />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: "#fff",
+                color: "#00000",
+                borderRadius: "10px",
+              },
+            }}
+          />
         </Providers>
       </body>
     </html>
